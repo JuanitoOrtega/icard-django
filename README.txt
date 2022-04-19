@@ -295,3 +295,50 @@ python3 manage.py makemigrations
 
 # Aplicamos las migraciones generadas
 python3 manage.py migrate
+
+# DESPLEGAR EN HEROKU
+$ heroku login
+
+$ cd my-project/
+$ git init
+$ heroku git:remote -a vicard
+
+# Instalamos paquete gunicorn
+pip install gunicorn
+
+# Para que los estáticos funcionen en heroku instalamos whitenoise
+pip install whitenoise
+
+# Creamos el requirements.txt
+pip freeze > requirements.txt
+
+# Vamos a settings y aplicamos los siguientes cambios
+-- DEBUG = False
+-- ALLOWED_HOSTS = ['*']
+
+# Configuramos los estáticos, añadimos lo siguiente al final de settings
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_TMP = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/static/'
+
+os.makedirs(STATIC_TMP, exist_ok=True)
+os.makedirs(STATIC_ROOT, exist_ok=True)
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static')
+)
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Agregamos whitenoise en los MIDDLEWARE
+'whitenoise.middleware.WhiteNoiseMiddleware'
+
+# En el archivo urls.py dentro de urlpatterns agregamos la siguiente línea
++ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Ejecutamos el siguiente comando
+python3 manage.py collectstatic --noinput
+
+# Creamos archivo Procfile con el siguiente contenido
+web: gunicorn icard.wsgi --log-file -
