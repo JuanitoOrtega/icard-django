@@ -342,3 +342,8 @@ python3 manage.py collectstatic --noinput
 
 # Creamos archivo Procfile con el siguiente contenido
 web: gunicorn icard.wsgi --log-file -
+
+
+heroku git:remote -a vicard
+
+git push heroku master
