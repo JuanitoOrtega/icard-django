@@ -170,3 +170,6 @@ CORS_ALLOW_CREDENTIALS = True
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=120)
 }
+
+# Session
+SESSION_COOKIE_NAME = 'django_icard'
